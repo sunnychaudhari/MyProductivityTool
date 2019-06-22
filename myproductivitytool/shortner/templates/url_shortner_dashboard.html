@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html>
 <head>
 	<title></title>
@@ -74,6 +75,7 @@
 		padding: 0px 10px 0px 10px;
 		}
 	</style>
+	<script type="text/javascript" src='{% static "js/jquery-3.4.1.min.js" %}'></script>
 </head>
 <body>
 	<div class="container">
@@ -81,25 +83,25 @@
 			<h2 align="webkit-center">URL SHORTENER TOOL</h2>
 		</div>
 			<div class="url-section">
-				<form class="myform">
+				<div class="myform">
 					<h4 class="text-left">Enter Domain (with http://)</h4>
 					<div class="form-group myFlex">
-						<input type="text" name="url-text" placeholder="">
+						<input type="url" class="url_input" name="url-text" placeholder="">
 						<button id="url-button"><b>Shorten URL</b></button>
 					</div>
-				</form>
+				</div>
 
 			</div>
-			<div class="url-partition">
+			<div class="url-partition" hidden>
 					<table class="blue-table w100p">
 						<tr>
 							<td class="border-right">
 								<p><b>Original URL</b></p>
-								<p style="font-size: 14px"><b>http://api.peachmode.com/sarees/</b></p>
+								<p style="font-size: 14px"><b class="original_url"></b></p>
 							</td>
 							<td class="border-left">
 								<p><b>Generated URL</b></p>
-								<p style="font-size: 14px"><b>http://urlzs.com/FgXwi</b></p>
+								<p style="font-size: 14px"><b class="generated_url"></b></p>
 
 							</td>
 							<td class="button"><button id="copy-button" style="border-radius: 20px;"><b>Copy</b></button></td>
@@ -107,6 +109,62 @@
 					</table>
 				</div>
 		</div>
+		<input type="hidden" class="csrf_token" value="{{csrf_token}}">
 
+	<script>
+		function create_short_url(input_url){
+			// AJAX to create shortner url
+			$.ajax({
+				 type: "POST",
+				 url: '/url_shortner/',
+				 data: {
+					'input_url': input_url
+				 },
+				 success: function(data) {
+				 	$('.url-partition').removeAttr('hidden');
+					$('.original_url').text(input_url);
+					$('.generated_url').text(data['url_shortner']);
+				 },
+				 error: function(xhr,status,error){
+					alert('Something went wrong Please reload Page')
+				 }
+			});
+		}
+
+		function copyToClipboard(text) {  //Function to copy the text
+		   var textArea = document.createElement( "textarea" );
+		   textArea.value = text;
+		   document.body.appendChild( textArea );
+		   textArea.select();
+		   try {
+			  var successful = document.execCommand( 'copy' );
+		   } catch (err) {
+			  console.log('Oops, unable to copy');
+		   }
+		   document.body.removeChild( textArea );
+		}
+
+		$( '#copy-button' ).click( function() { //copy button event
+			 var clipboardText = $( '.generated_url' ).text();
+			 copyToClipboard( clipboardText );
+		 });
+
+		function isUrlValid(userInput) {
+			var res = userInput.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+			if(res == null)
+				return false;
+			else
+				return true;
+		}
+		$('body').on('click', '#url-button', function(event){
+			var input_url = $('.url_input').val();
+			if (input_url && isUrlValid(input_url)){  //validation check
+				create_short_url(input_url) //hit ajax call to create the shortner url
+			}
+			else{
+				$('.url-partition').attr("hidden", "true");
+			}
+		});
+	</script>
 </body>
 </html>
