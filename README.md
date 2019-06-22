@@ -1,7 +1,8 @@
 # MyProductivityTool
 -------------------------------
 1. Create virtual environment and activate it for your project
-   virtualenv prdtools
+
+   virtualenv prdtools\n
    cd prdtools
    source bin/ activate
 
