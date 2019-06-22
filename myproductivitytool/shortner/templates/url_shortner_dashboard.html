@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		html, body{
+			margin:0;
+		}
+		.container{
+			width:1024px;
+			margin:0 auto;
+			max-width:90%;
+		}
+		.url-section{
+		  background: #fff;
+		  padding: 75px;
+		  margin:0px 135px;
+		  border:1px solid #ddd;
+		}
+		.heading-section{
+		  background: #fff;
+		  padding: 5px;
+		  text-align: -webkit-center;
+		}
+		#url-button{
+ 	 		border:1px solid #ddd;
+  			padding:  16px 13px 16px 12px;
+  			background-color: #4272d7;
+  			color: #fff;
+		}
+		#copy-button{
+			border:1px solid #ddd;
+  			padding: 8px 20px;
+  			background-color: #4272d7;
+  			color: #fff;
+		}
+		input[type=text]{
+  			border:1px solid #ddd;
+  			padding: 10px 20px;
+		}
+		input[name=url-text]{
+			width: 72%;
+		}
+		.url-partition{
+			background: #ddebff;
+		  	padding: 0px;
+		  	margin:-22px 135px;
+		  	text-align: -webkit-center;
+		  	border:1px solid #ddd;
+		}
+		.border-right{
+			border-right:1px solid #ddd;
+			padding: 10px;
+
+		}
+		.border-left{
+
+			padding: 10px;
+		}
+		.myFlex{
+			display: flex;
+			justify-content: space-between;
+		}
+		.w100p{width:100%;}
+		h2{
+			color: #2F4F4F;
+		}
+		h4{
+		color: #2F4F4F;
+		}
+		p{
+		color: #2F4F4F;
+		padding: 0px 10px 0px 10px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="heading-section">
+			<h2 align="webkit-center">URL SHORTENER TOOL</h2>
+		</div>
+			<div class="url-section">
+				<form class="myform">
+					<h4 class="text-left">Enter Domain (with http://)</h4>
+					<div class="form-group myFlex">
+						<input type="text" name="url-text" placeholder="">
+						<button id="url-button"><b>Shorten URL</b></button>
+					</div>
+				</form>
+
+			</div>
+			<div class="url-partition">
+					<table class="blue-table w100p">
+						<tr>
+							<td class="border-right">
+								<p><b>Original URL</b></p>
+								<p style="font-size: 14px"><b>http://api.peachmode.com/sarees/</b></p>
+							</td>
+							<td class="border-left">
+								<p><b>Generated URL</b></p>
+								<p style="font-size: 14px"><b>http://urlzs.com/FgXwi</b></p>
+
+							</td>
+							<td class="button"><button id="copy-button" style="border-radius: 20px;"><b>Copy</b></button></td>
+						</tr>
+					</table>
+				</div>
+		</div>
+
+</body>
+</html>
