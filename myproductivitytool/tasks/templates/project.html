@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+	<title>Projects</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "vendor/bootstrap/css/bootstrap.min.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "fonts/font-awesome-4.7.0/css/font-awesome.min.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "fonts/Linearicons-Free-v1.0.0/icon-font.min.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "vendor/animate/animate.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "vendor/css-hamburgers/hamburgers.min.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "vendor/animsition/css/animsition.min.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "vendor/select2/select2.min.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "vendor/daterangepicker/daterangepicker.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "css/util.css" %}'>
+	<link rel="stylesheet" type="text/css" href='{% static "css/main.css" %}'>
+<!--===============================================================================================-->
+</head>
+<body>
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-100 p-l-55 p-r-55 p-t-65 p-b-50 min-required-height">
+				<form class="login100-form validate-form  p-b-50" method="post" onsubmit="event.preventDefault();">
+
+					<span class="login100-form-title p-b-33">
+						Create New Project
+					</span>
+
+					<div class="row">
+						<div class="col-8">
+							<div class="wrap-input100 validate-input" data-validate = "Project name is required">
+								<input class="input100" type="text" name="pro_name" id="pro_name" placeholder="Project name">
+								<span class="focus-input100-1"></span>
+								<span class="focus-input100-2"></span>
+							</div>
+						</div>
+						<div class="col-4">
+							<div class="container-login100-form-btn">
+								<button class="login100-form-btn" id="save-project">
+									Save
+								</button>
+							</div>
+						</div>
+					</div>
+				</form>
+
+				<!--list of projects-->
+				<div class="project-list-section todo-table">
+					<table class="table table-bordered text-center hidden">
+					  <thead>
+						<tr>
+						  <th scope="col">Project Names</th>
+						  <th class="text-center" scope="col">Edit</th>
+						  <th class="text-center" scope="col">Delete</th>
+						</tr>
+					  </thead>
+					  <tbody>
+                        {% for each in project %}
+                        <tr>
+                            <td class="eachProject">
+                                <input class="form-control" disabled="true" type="text" id="{{each.id}}" value="{{each.project_name}}">
+                            </td>
+                            <td>
+                                <button class="icon-btn editBtn"><i class="fa fa-pencil"></i></button>
+                            </td>
+                            <td>
+                                <button class="icon-btn deleteBtn"><i class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+<!--===============================================================================================-->
+	<script src='{% static "vendor/jquery/jquery-3.2.1.min.js" %}'></script>
+<!--===============================================================================================-->
+	<script src='{% static "vendor/animsition/js/animsition.min.js" %}'></script>
+<!--===============================================================================================-->
+	<script src='{% static "vendor/bootstrap/js/popper.js" %}'></script>
+	<script src='{% static "vendor/bootstrap/js/bootstrap.min.js" %}'></script>
+<!--===============================================================================================-->
+	<script src='{% static "vendor/select2/select2.min.js" %}'></script>
+<!--===============================================================================================-->
+	<script src='{% static "vendor/daterangepicker/moment.min.js" %}'></script>
+	<script src='{% static "vendor/daterangepicker/daterangepicker.js" %}'></script>
+<!--===============================================================================================-->
+	<script src='{% static "vendor/countdowntime/countdowntime.js" %}'></script>
+<!--===============================================================================================-->
+	<script src='{% static "js/main.js" %}'></script>
+	<script>
+		$(document).on("click", ".deleteBtn", function(){
+			$(this).parents("tr").remove();
+			checkProjectLength();
+		});
+
+		$(document).on("click", ".editBtn", function(e){
+			if($(this).hasClass("active")){
+			    var curr_element = $(this);
+                var proName = curr_element.parents("tr").removeClass("edit-mode").find("input").val();
+                var proId = curr_element.parents("tr").removeClass("edit-mode").find("input").attr('id')
+			    $.ajax({
+                     type: "PATCH",
+                     url: "/api/project/",
+                     data:{
+                        'project_name': proName,
+                        'project_id': proId,
+                     },
+                     success: function(data){
+                        curr_element.parents("tr").removeClass("edit-mode").find("input").attr("disabled", true);
+                        curr_element.find("i").removeClass("fa-save").addClass("fa-pencil");
+                        curr_element.removeClass("active");
+                     }
+                });
+
+
+
+			}else{
+				$(this).parents("tr").addClass("edit-mode").find("input").removeAttr("disabled");
+				$(this).parents("tr").find("input").focus();
+				$(this).find("i").removeClass("fa-pencil").addClass("fa-save");
+				$(this).addClass("active");
+			}
+		});
+
+		$("#save-project").on("click", function(e){
+			e.preventDefault();
+			var proName = $("#pro_name").val();
+			$.ajax({
+                 type: "POST",
+                 url: "/api/project/",
+                 data:{
+                    'project_name': proName,
+                    'user_id': {{request.user.id}},
+                 },
+                 success: function(data){
+                    if (data){
+                        proName = data['project_name']
+                        proId = data['id']
+                        var pindex = $('.project-list-section table tbody tr').length + 1;
+                        if(proName){
+                            $('.project-list-section table').removeClass("hidden");
+                            $(".project-list-section table tbody").append('<tr><td class="eachProject"><input class="form-control" disabled="true" type="text" id='+proId+' name="pro_name'+pindex+'" placeholder="Project name"></td><td><button class="icon-btn editBtn"><i class="fa fa-pencil"></i></button></td><td><button class="icon-btn deleteBtn"><i class="fa fa-trash"></i></button></td></tr>');
+                            $("input[name=pro_name"+pindex+"]").val(proName);
+                        }
+                        $("#pro_name").val("");
+                    }
+                 }
+            });
+
+
+
+		});
+
+		$(document).on("click", ".project-list-section table tbody tr td.eachProject", function(){
+			if(!$(this).parent("tr").hasClass("edit-mode")){
+			    project_id = $(this).find('input').attr('id');
+				window.location = "/project/"+project_id;
+			}
+		});
+
+		function checkProjectLength(){
+			var projectLength = $('.project-list-section table tbody tr').length;
+			projectLength > 0 ?
+			$('.project-list-section table').removeClass("hidden") :
+			$('.project-list-section table').addClass("hidden");
+		}
+
+		checkProjectLength();
+	</script>
+</body>
+</html>

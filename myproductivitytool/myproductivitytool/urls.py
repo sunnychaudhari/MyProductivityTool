@@ -18,10 +18,13 @@ from django.conf.urls import url, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from shortner.views import original_url
 
 urlpatterns = [
     #url(r'^admin/', admin.site.urls),
     url(r'^', include('shortner.urls')),
+    url(r'^', include('tasks.urls')),
+    url(r'^(?P<uid>\w{0,50})/$',original_url, name='short_url'),
 
 ]
 

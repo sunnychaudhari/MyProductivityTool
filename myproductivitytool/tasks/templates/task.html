@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+	<title>Tasks</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "vendor/bootstrap/css/bootstrap.min.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "fonts/font-awesome-4.7.0/css/font-awesome.min.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "fonts/Linearicons-Free-v1.0.0/icon-font.min.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "vendor/animate/animate.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "vendor/css-hamburgers/hamburgers.min.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "vendor/animsition/css/animsition.min.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "vendor/select2/select2.min.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "vendor/daterangepicker/daterangepicker.css" %}'>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href='{% static "css/util.css" %}'>
+	<link rel="stylesheet" type="text/css" href='{% static "css/main.css" %}'>
+<!--===============================================================================================-->
+</head>
+<body>
+	
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-100 p-l-55 p-r-55 p-t-65 p-b-50 min-required-height">
+
+				<form class="login100-form validate-form  p-b-50" method="post" onsubmit="event.preventDefault();">
+
+					<!--list of Task-->
+					<div class="project-section">
+						<div class="project-parent">
+							<table class="project-details wrap-input100 bg-primary">
+								<tr>
+									<td class="eachTaskName">
+										<input class="form-control input100" disabled="true" type="text" name="project_name" placeholder="Project name" value="{{project.project_name}}">
+									</td>
+									<td><button class="login100-form-btn icon-btn editBtn"><i class="fa fa-pencil"></i></button></td>
+									<td><button class="login100-form-btn icon-btn deleteBtn"><i class="fa fa-trash"></i></button></td>
+								</tr>
+							</table>
+
+							<div class="add-task-section">
+								<div class="row">
+									<div class="col-1">
+										<i class="fa fa-plus text-primary big-plus"></i>
+									</div>
+									<div class="col-7">
+										<div class="wrap-input100 validate-input" data-validate = "Task name is required">
+											<input class="input100" type="text" name="task_name" id="task_name" placeholder="Task name">
+											<span class="focus-input100-1"></span>
+											<span class="focus-input100-2"></span>
+										</div>
+									</div>
+									<div class="col-4">
+										<div class="container-login100-form-btn">
+											<button class="login100-form-btn" id="save-task">
+												Add Task
+											</button>
+										</div>
+									</div>
+								</div>
+								<div class="task-list hidden">
+									<table class="table text-center m-b-0 todo-table">
+									  <tbody></tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+
+	
+<!--===============================================================================================-->
+	<script src='{% static "vendor/jquery/jquery-3.2.1.min.js" %}'></script>
+<!--===============================================================================================-->
+	<script src='{% static "vendor/animsition/js/animsition.min.js" %}'></script>
+<!--===============================================================================================-->
+	<script src='{% static "vendor/bootstrap/js/popper.js" %}'></script>
+	<script src='{% static "vendor/bootstrap/js/bootstrap.min.js" %}'></script>
+<!--===============================================================================================-->
+	<script src='{% static "vendor/select2/select2.min.js" %}'></script>
+<!--===============================================================================================-->
+	<script src='{% static "vendor/daterangepicker/moment.min.js" %}'></script>
+	<script src='{% static "vendor/daterangepicker/daterangepicker.js" %}'></script>
+<!--===============================================================================================-->
+	<script src='{% static "vendor/countdowntime/countdowntime.js" %}'></script>
+<!--===============================================================================================-->
+	<script src='{% static "js/main.js" %}'></script>
+	<script>
+		$(document).on("click", ".project-details .deleteBtn", function(){
+			if(!$(this).parent("tr").hasClass("edit-mode")){
+				window.location = "project.html";
+			}
+		});
+		$(document).on("click", ".task-list .deleteBtn", function(){
+			$(this).parents("tr").remove();
+			checkProjectLength();
+		});
+
+		$(document).on("click", ".editBtn", function(e){
+			if($(this).hasClass("active")){
+				$(this).parents("tr").removeClass("edit-mode").find("input").attr("disabled", true);
+				$(this).find("i").removeClass("fa-save").addClass("fa-pencil");
+				$(this).removeClass("active");
+			}else{
+				$(this).parents("tr").addClass("edit-mode").find("input").removeAttr("disabled");
+				$(this).parents("tr").find("input").focus();
+				$(this).find("i").removeClass("fa-pencil").addClass("fa-save");
+				$(this).addClass("active");
+			}
+		});
+
+		$("#save-task").on("click", function(e){
+			e.preventDefault();
+			var taskName = $("#task_name").val();
+			var tindex = $('.task-list table tbody tr').length + 1;
+			if(taskName){
+				$('.task-list').removeClass("hidden");
+
+				$(".add-task-section table tbody").append('<tr><td class="eachTask"><input class="form-control" disabled="true" type="text" name="task_name'+tindex+'" placeholder="Task name"></td><td><button class="icon-btn editBtn"><i class="fa fa-pencil"></i></button></td><td><button class="icon-btn deleteBtn"><i class="fa fa-trash"></i></button></td></tr>');
+				$("input[name=task_name"+tindex+"]").val(taskName);
+			}
+			$("#task_name").val("");
+		});
+
+		/*$(document).on("click", ".add-task-section table tbody tr td.eachTask", function(){
+			if(!$(this).parent("tr").hasClass("edit-mode")){
+				window.location = "login.html";
+			}
+		});*/
+
+		function checkProjectLength(){
+			var projectLength = $('.task-list table tbody tr').length;
+			projectLength > 0 ?
+			$('.task-list').removeClass("hidden") :
+			$('.task-list').addClass("hidden");
+		}
+
+		checkProjectLength();
+	</script>
+</body>
+</html>
