@@ -43,6 +43,13 @@ def project_page(request):
             Project.objects.filter(id=int(project_id)).update(project_name=str(project_name))
             context = {'id': project_id, 'project_name': project_name}
         return JsonResponse(context, safe=False)
+    if request.method == 'DELETE':
+        context = {}
+        data = QueryDict(request.body)
+        project_id = data['project_id']
+        if project_id:
+            Project.objects.filter(id=int(project_id)).delete()
+        return JsonResponse(context, safe=False)
     else:
         proj_obj = Project.objects.all().values()
         context = {'project': list(proj_obj)}

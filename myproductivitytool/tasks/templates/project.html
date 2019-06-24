@@ -105,8 +105,22 @@
 	<script src='{% static "js/main.js" %}'></script>
 	<script>
 		$(document).on("click", ".deleteBtn", function(){
-			$(this).parents("tr").remove();
-			checkProjectLength();
+            var curr_element = $(this);
+            proId = curr_element.parents("tr").removeClass("edit-mode").find("input").attr('id')
+			$.ajax({
+                 type: "DELETE",
+                 url: "/api/project/",
+                 data:{
+                    'project_id': proId,
+                 },
+                 success: function(data){
+                    curr_element.parents("tr").remove();
+                    checkProjectLength();
+                 }
+            });
+
+
+
 		});
 
 		$(document).on("click", ".editBtn", function(e){
