@@ -41,8 +41,9 @@ INSTALLATION :
 # Notes For MyProductivityTool project
 
     http://localhost:8000/login   -->(login page for project)
-    * Signup first for the project, once signed up successfully it will redirect to login page.
+    * Signup first for the project by click on signup link on login page, once signed up successfully it will redirect to login page.
     * Once you loggedin you will redirect to "project page", where you can create new project, add ,update and delete projects
-    * Once you create project you can create a task under that project, click on projectv name you will be redirected to the task page
+    * You can create a task under that project, click on project name you will be redirected to the task page
     * You can create new task here or edit the existing tasks or delete
-    * For the enter the task details, click on task name and you will see popup modal with task assigned_to, due date and task description details, You can add or update the task details from that form or you can delete the task
+    * To enter the task details, click on task name and you will see popup modal with task assigned_to, due date and task description details, You can add or update the task details from that form or you can delete the task
+    * The user should only have access to his/her own projects and tasks.
