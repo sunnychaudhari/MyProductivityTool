@@ -42,8 +42,6 @@
 									<td class="eachTaskName">
 										<input class="form-control input100" disabled="true" type="text" name="project_name" placeholder="Project name" value="{{project.project_name}}">
 									</td>
-									<td><button class="login100-form-btn icon-btn editBtn"><i class="fa fa-pencil"></i></button></td>
-									<td><button class="login100-form-btn icon-btn deleteBtn"><i class="fa fa-trash"></i></button></td>
 								</tr>
 							</table>
 
@@ -67,10 +65,72 @@
 										</div>
 									</div>
 								</div>
-								<div class="task-list hidden">
+								<div class="task-list">
 									<table class="table text-center m-b-0 todo-table">
-									  <tbody></tbody>
+									  <tbody>
+									  	{% for each in tasks %}
+									  	<tr>
+											<td class="eachTask">
+												<input class="form-control" disabled="true" type="text" data-task_id="{{each.id}}" data-task_assigned_to="{{each.assigned_to_id}}" data-task_due_date="{{each.due_date}}" data-task_description="{{each.task_description}}" value="{{each.task_name}}">
+											</td>
+											<td>
+												<button class="icon-btn editBtn" data-task_id="{{each.id}}"><i class="fa fa-pencil"></i></button>
+											</td>
+											<td>
+												<button class="icon-btn deleteBtn" data-task_id="{{each.id}}"><i class="fa fa-trash"></i></button>
+											</td>
+										</tr>
+									  {% endfor %}
+									  </tbody>
 									</table>
+								</div>
+								<!-- Modal -->
+								<div class="modal fade" id="taskModal" tabindex="-1" role="dialog" aria-labelledby="taskModalLabel" aria-hidden="true">
+								  <div class="modal-dialog modal-dialog-centered" role="document">
+									<div class="modal-content">
+									  <div class="modal-header">
+										<input type="text" class="modal-title" id="taskModalLabel" data-task_id="" name="modalTitle" />
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										  <span aria-hidden="true">&times;</span>
+										</button>
+									  </div>
+									  <div class="modal-body">
+										<div class="taskpane-asignee">
+											<div class="row">
+												<div class="col-6">
+													<div class="form-group">
+														<label for="assignee">Asigned to:</label>
+														<select name="assignee" id="assignee" class="form-control">
+															<option value="select1">Select</option>
+															{% for each in users %}
+															<option value="{{each.id}}">{{each.username}}</option>
+															{% endfor %}
+														</select>
+													</div>
+												</div>
+												<div class="col-6">
+													<div class="form-group DueDateToken">
+														<label for="date-input">Due Date:</label>
+														<input type="text" id="date-input" name="date-input" class="form-control">
+													</div>
+												</div>
+											</div>
+										</div>
+									    <div class="description-section form-group">
+											<label for="description">Description:</label>
+											<div class="wrap-input100">
+												<textarea name="description" id="description" class="form-control input100" cols="30" rows="10"></textarea>
+												<span class="focus-input100-1"></span>
+												<span class="focus-input100-2"></span>
+											</div>
+										</div>
+									  </div>
+									  <div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+										<button type="button" class="btn btn-primary update_task">Save changes</button>
+									  </div>
+									</div>
+								  </div>
 								</div>
 							</div>
 						</div>
@@ -79,7 +139,7 @@
 			</div>
 		</div>
 	</div>
-	
+	<input class="form-control input100" type="hidden" id="project_id" value="{{project.id}}">
 
 	
 <!--===============================================================================================-->
@@ -99,21 +159,57 @@
 <!--===============================================================================================-->
 	<script src='{% static "js/main.js" %}'></script>
 	<script>
-		$(document).on("click", ".project-details .deleteBtn", function(){
+
+		/*$(document).on("click", ".project-details .deleteBtn", function(){
 			if(!$(this).parent("tr").hasClass("edit-mode")){
 				window.location = "project.html";
 			}
-		});
-		$(document).on("click", ".task-list .deleteBtn", function(){
-			$(this).parents("tr").remove();
-			checkProjectLength();
+		});*/
+		$(document).on("click", ".deleteBtn", function(){
+			var elem = $(this);
+			var taskId = elem.attr('data-task_id');
+			//ajax call to delete the task
+			$.ajax({
+				 type: "DELETE",
+				 url: '/tasks/',
+				 data: {
+					'task_id': taskId
+				 },
+				 success: function(data) {
+				 	elem.parents("tr").remove();
+
+				 },
+				 error: function(xhr,status,error){
+					alert('Something went wrong Please reload Page')
+				 }
+			});
+
 		});
 
 		$(document).on("click", ".editBtn", function(e){
 			if($(this).hasClass("active")){
-				$(this).parents("tr").removeClass("edit-mode").find("input").attr("disabled", true);
-				$(this).find("i").removeClass("fa-save").addClass("fa-pencil");
-				$(this).removeClass("active");
+				var elem = $(this);
+				var taskId = elem.attr('data-task_id');
+				var task_name = elem.parents("tr").find("input").val();
+				//ajax call to update the task
+				$.ajax({
+					 type: "PATCH",
+					 url: '/tasks/',
+					 data: {
+						'task_name': task_name,
+						'task_id': taskId
+					 },
+					 success: function(data) {
+						elem.parents("tr").removeClass("edit-mode").find("input").attr("disabled", true);
+						elem.find("i").removeClass("fa-save").addClass("fa-pencil");
+						elem.removeClass("active");
+					 },
+					 error: function(xhr,status,error){
+						alert('Something went wrong Please reload Page')
+					 }
+				});
+
+
 			}else{
 				$(this).parents("tr").addClass("edit-mode").find("input").removeAttr("disabled");
 				$(this).parents("tr").find("input").focus();
@@ -125,30 +221,112 @@
 		$("#save-task").on("click", function(e){
 			e.preventDefault();
 			var taskName = $("#task_name").val();
+			var project_id = $("#project_id").val();
 			var tindex = $('.task-list table tbody tr').length + 1;
-			if(taskName){
-				$('.task-list').removeClass("hidden");
 
-				$(".add-task-section table tbody").append('<tr><td class="eachTask"><input class="form-control" disabled="true" type="text" name="task_name'+tindex+'" placeholder="Task name"></td><td><button class="icon-btn editBtn"><i class="fa fa-pencil"></i></button></td><td><button class="icon-btn deleteBtn"><i class="fa fa-trash"></i></button></td></tr>');
-				$("input[name=task_name"+tindex+"]").val(taskName);
+			if(taskName && project_id){
+				//ajax call to create new task
+				$.ajax({
+					 type: "POST",
+					 url: '/tasks/',
+					 data: {
+						'task_name': taskName,
+						'project_id': project_id
+					 },
+					 success: function(data) {
+						$(".add-task-section table tbody").append('<tr><td class="eachTask"><input class="form-control" disabled="true" type="text" name="task_name'+tindex+'" data-task_id="'+data['id']+'" value="'+data['task_name']+'"></td><td><button class="icon-btn editBtn" data-task_id="'+data['id']+'"><i class="fa fa-pencil"></i></button></td><td><button class="icon-btn deleteBtn" data-task_id="'+data['id']+'"><i class="fa fa-trash"></i></button></td></tr>');
+						$("input[name=task_name"+tindex+"]").val(data['task_name']);
+					 },
+					 error: function(xhr,status,error){
+						alert('Something went wrong Please reload Page')
+					 }
+				});
 			}
 			$("#task_name").val("");
 		});
 
-		/*$(document).on("click", ".add-task-section table tbody tr td.eachTask", function(){
+		$(document).on("click", ".add-task-section table tbody tr td.eachTask", function(){
 			if(!$(this).parent("tr").hasClass("edit-mode")){
-				window.location = "login.html";
+				var taskTitle = $(this).find("input[type=text]").val();
+				var taskId = $(this).find("input[type=text]").attr('data-task_id');
+				var taskDueDate = $(this).find("input[type=text]").attr('data-task_due_date');
+				var taskAssignedTo = $(this).find("input[type=text]").attr('data-task_assigned_to');
+				var taskDescription = $(this).find("input[type=text]").attr('data-task_description');
+				$('#taskModalLabel').val(taskTitle);
+				$('#taskModalLabel').attr('data-task_id', taskId);
+				$('#description').val('')
+				if(taskDescription){
+					$('#description').val(taskDescription);
+				}
+				var today = new Date();
+				$('#date-input').daterangepicker({
+					singleDatePicker: true,
+					showDropdowns: true,
+					minDate: today
+				});
+				$("#assignee").val('select1').change()
+				if(taskDueDate != 'None'){
+					$('#date-input').val('');
+					taskDueDate = new Date(taskDueDate);
+					$('input[name="date-input"]').daterangepicker({
+						singleDatePicker: true,
+						showDropdowns: true,
+						minDate: taskDueDate
+					});
+				}
+				if(taskAssignedTo != "None"){
+					$("#assignee").val(taskAssignedTo).change();
+				}
+
+				$('#taskModal').modal('show');
 			}
-		});*/
+		});
+
+		$(document).on("click", ".update_task", function(e){
+			var taskId = $('#taskModalLabel').attr('data-task_id');;
+			var task_assigned_to = $("#assignee").val();
+			var task_due_date = $('#date-input').val();
+			var task_description = $('#description').val();
+			//ajax call to update the task
+			$.ajax({
+				 type: "PATCH",
+				 url: '/update_tasks/',
+				 data: {
+					'task_id': taskId,
+					'task_assigned_to': task_assigned_to,
+					'task_due_date': task_due_date,
+					'task_description': task_description
+				 },
+				 success: function(data) {
+				 	$('#taskModal').modal('toggle');
+				 	location.reload();
+
+				 },
+				 error: function(xhr,status,error){
+					alert('Something went wrong Please reload Page')
+				 }
+			});
+
+		});
 
 		function checkProjectLength(){
 			var projectLength = $('.task-list table tbody tr').length;
-			projectLength > 0 ?
-			$('.task-list').removeClass("hidden") :
-			$('.task-list').addClass("hidden");
+			if (projectLength == 0){
+				projectLength = 1;
+			}
+			projectLength > 0 ? $('.task-list').removeClass("hidden") : $('.task-list').addClass("hidden");
 		}
 
 		checkProjectLength();
+
+		$(function() {
+		  var today = new Date();
+		  $('input[name="date-input"]').daterangepicker({
+			singleDatePicker: true,
+			showDropdowns: true,
+			minDate: today
+		  });
+		});
 	</script>
 </body>
 </html>

@@ -22,9 +22,13 @@ class Project(models.Model):
 class Task(models.Model):
     project = models.ForeignKey(Project,default=None, related_name='task_project')
     task_name = models.CharField(max_length=500, default=None, blank=False)
+    assigned_to = models.ForeignKey(User,default=None, related_name='assigned_user', blank=True, null=True)
     prioriry = models.CharField(choices=PRIORITY,max_length=20, default='Disabled')
     due_date = models.DateField(default=None, blank=True, null=True)
+    task_description = models.CharField(max_length=500, default=None, blank=True, null=True)
     complete = models.BooleanField(default=False)
+    created_by = models.IntegerField (blank=True , null=True)
+    created_at = models.DateTimeField (auto_now_add=True , auto_now=False)
 
     class Meta:
         app_label = 'tasks'

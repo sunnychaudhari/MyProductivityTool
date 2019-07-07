@@ -451,6 +451,7 @@ input.input100 {
 .todo-table .eachTask .form-control:disabled{
     background-color:transparent;
     color:#333 !important;
+    cursor: pointer;
 }
 .todo-table .project-parent .form-control:disabled, .todo-table .project-parent .form-control[readonly]{
     background-color:transparent;
