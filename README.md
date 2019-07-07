@@ -19,7 +19,7 @@ INSTALLATION :
 
 2. Clone project
 
-    --> git clone https://github.com/<your github username>/MyProductivityTool.git
+    --> git clone https://github.com/<<your github username>>/MyProductivityTool.git
 
 3. Install required packages
 
