@@ -24,6 +24,11 @@ def login_page(request):
 
     return render(request, 'login.html', {})
 
+
+def logout_page(request):
+    logout (request)
+    return redirect ('login')
+
 @login_required
 @csrf_exempt
 def project_page(request):
@@ -52,7 +57,7 @@ def project_page(request):
             Project.objects.filter(id=int(project_id)).delete()
         return JsonResponse(context, safe=False)
     else:
-        proj_obj = Project.objects.all().values()
+        proj_obj = Project.objects.filter(user_id=request.user.id).values()
         context = {'project': list(proj_obj)}
         return render(request, 'project.html', context)
 

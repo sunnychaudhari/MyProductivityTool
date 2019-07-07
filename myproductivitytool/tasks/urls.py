@@ -2,6 +2,7 @@ from django.conf.urls import url, include
 from .views import *
 urlpatterns = [
     url(r'^login/',login_page, name='login'),
+    url(r'^logout/',logout_page, name='logout'),
     url(r'^signup/',signup_page, name='signup'),
     url(r'^tasks/',task_page, name='task_page'),
     url(r'^update_tasks/',update_task_details, name='update_task_details'),
