@@ -2,7 +2,7 @@
 
     This is web application for url shortner and myproductivitytool project, based on django-1.11 with python-2.7
     Used ajax to update the data on the pages to display the results without reloading the page.
-    **Technologies used** : HTML, CSS, Javascript, Jquery, python, django
+    ###Technologies used### : HTML, CSS, Javascript, Jquery, python, django
 
     * Follow the bellow installation steps and notes for this web application to run in your local machine
 
