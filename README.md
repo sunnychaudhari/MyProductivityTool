@@ -47,7 +47,7 @@ INSTALLATION :
     You will see the shortend url below, check hitting that shorten url into browser it will redirect to the original url
 
     * you can see all the relevant code under shortner app in django project. urls, models and business logic.
-    * Used ajax calls to execute the api calls, you will see the results without reloading the page.
+    * Used ajax calls to execute the api calls, you will see the results without reloading the page. 
     * API to create url shortner: "http://localhost:8000/url_shortner/" with POST request params={input_url: http://google.com}
     (You can check this api from any api client for eg. postman) 
 
