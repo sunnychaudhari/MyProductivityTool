@@ -1,6 +1,6 @@
 # URL Shortner and MyProductivityTool project
 
-    This is web application for url shortner and myproductivitytool project, based on django-1.11 with python-2.7
+    This is web application for url shortner and myproductivitytool project, based on django-1.11 with python-3.7
     Used ajax to update the data on the pages to display the results without reloading the page.
     * Technologies used : HTML, CSS, Javascript, Jquery, python, django
 
@@ -11,7 +11,7 @@ INSTALLATION :
 
 1. Create virtual environment and activate it for your project
 
-    --> virtualenv prdtools
+    --> virtualenv -p python3 prdtools
 
     --> cd prdtools
 
@@ -25,7 +25,7 @@ INSTALLATION :
 
     --> cd MyProductivityTools
 
-    --> pip install -r requirements.txt
+    --> pip3 install -r requirements.txt
 
 4. Makemigrations and migrate into default database sqlite
 
